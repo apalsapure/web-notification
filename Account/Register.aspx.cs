@@ -48,7 +48,6 @@ namespace Notification.Account
             }
 
             mp.CreateUser(TextboxEmail.Text, TextboxPassword.Text, TextboxEmail.Text, firstName, lastName, out status);
-
         }
     }
 }

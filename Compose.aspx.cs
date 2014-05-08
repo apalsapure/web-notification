@@ -20,7 +20,7 @@ namespace Notification
                 drpEmailType.DataSource = new List<string> { "Raw", "Template" };
                 drpEmailType.DataBind();
 
-                drpPushToType.DataSource = new List<string> { "Channels", "Device Ids", "Query", "Broadcast" };
+                drpPushToType.DataSource = new List<string> { "Channels", "Device Ids", "Broadcast" };
                 drpPushToType.DataBind();
             }
         }
@@ -40,7 +40,7 @@ namespace Notification
             multiView.ActiveViewIndex = drpCompose.SelectedIndex;
         }
 
-        protected void btnSendPush_Click(object sender, EventArgs e)
+        protected async void btnSendPush_Click(object sender, EventArgs e)
         {
             var pushItem = new PushItem();
             pushItem.Badge = txtPushBadge.Text;
@@ -51,7 +51,7 @@ namespace Notification
             int.TryParse(txtPushExpiry.Text.Trim(), out expiry);
             pushItem.Expiry = expiry;
             pushItem.Message = txtPushMessage.Text;
-            var message = pushItem.Save();
+            var message = await pushItem.Save();
             if (string.IsNullOrEmpty(message))
             {
                 lblPushMessage.CssClass = "alert-success";
@@ -64,7 +64,7 @@ namespace Notification
             }
         }
 
-        protected void btnSendEmail_Click(object sender, EventArgs e)
+        protected async void btnSendEmail_Click(object sender, EventArgs e)
         {
             var emailItem = new EmailItem();
             emailItem.From = txtEmailFrom.Text;
@@ -86,7 +86,7 @@ namespace Notification
                 if (string.IsNullOrEmpty(txtHK5.Text.Trim()) == false) emailItem.PlaceHolders[txtHK5.Text.Trim()] = txtHV5.Text.Trim();
                 if (string.IsNullOrEmpty(txtHK6.Text.Trim()) == false) emailItem.PlaceHolders[txtHK6.Text.Trim()] = txtHV6.Text.Trim();
             }
-            var message = emailItem.Save();
+            var message = await emailItem.Save();
             if (string.IsNullOrEmpty(message))
             {
                 lblEmailMessage.CssClass = "alert-success";

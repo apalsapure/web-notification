@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Title="Compose" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Compose.aspx.cs" Inherits="Notification.Compose" %>
+﻿<%@ Page Language="C#" Async="true" Title="Compose" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Compose.aspx.cs" Inherits="Notification.Compose" %>
 
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
     <div class="composer">

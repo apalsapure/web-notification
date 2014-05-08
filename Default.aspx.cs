@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -10,29 +11,29 @@ namespace Notification
 {
     public partial class _Default : Page
     {
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
             if (Page.IsPostBack == false)
             {
-                gridEmail.DataSource = EmailItem.LoadData(gridEmail.PageIndex, gridEmail.PageSize);
+                gridEmail.DataSource = await EmailItem.LoadData(gridEmail.PageIndex, gridEmail.PageSize);
                 gridEmail.DataBind();
             }
         }
 
-        protected void gridEmail_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected async void gridEmail_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gridEmail.PageIndex = e.NewPageIndex;
-            gridEmail.DataSource = EmailItem.LoadData(e.NewPageIndex, gridEmail.PageSize);
+            gridEmail.DataSource = await EmailItem.LoadData(e.NewPageIndex, gridEmail.PageSize);
             gridEmail.DataBind();
         }
 
-        protected void gridEmail_SelectedIndexChanged(object sender, EventArgs e)
+        protected async void gridEmail_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (gridEmail.SelectedIndex == -1) return;
             emailMultiView.ActiveViewIndex = 1;
 
             var selectedItemId = gridEmail.SelectedRow.Cells[1].Text;
-            var selectedItem = EmailItem.Fetch(selectedItemId);
+            var selectedItem = await EmailItem.Fetch(selectedItemId);
             lblEmailSubject.InnerText = selectedItem.Subject;
             lblEmailTo.InnerText = selectedItem.To;
             lblEmailFrom.InnerText = selectedItem.From;
@@ -75,20 +76,20 @@ namespace Notification
             }
         }
 
-        protected void gridPush_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected async void gridPush_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gridPush.PageIndex = e.NewPageIndex;
-            gridPush.DataSource = PushItem.LoadData(e.NewPageIndex, gridEmail.PageSize);
+            gridPush.DataSource = await PushItem.LoadData(e.NewPageIndex, gridEmail.PageSize);
             gridPush.DataBind();
         }
 
-        protected void gridPush_SelectedIndexChanged(object sender, EventArgs e)
+        protected async void gridPush_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (gridPush.SelectedIndex == -1) return;
             pushMultiView.ActiveViewIndex = 1;
 
             var selectedItemId = gridPush.SelectedRow.Cells[1].Text;
-            var selectedItem = PushItem.Fetch(selectedItemId);
+            var selectedItem = await PushItem.Fetch(selectedItemId);
             lblPushMessage.InnerText = selectedItem.Message;
             lblPushTo.InnerText = selectedItem.To;
             lblPushFrom.InnerText = selectedItem.From;
@@ -118,7 +119,7 @@ namespace Notification
             }
         }
 
-        protected void lnkEmails_Click(object sender, EventArgs e)
+        protected async void lnkEmails_Click(object sender, EventArgs e)
         {
             lnkEmails.CssClass += " active";
             lnkPush.CssClass = lnkPush.CssClass.Replace("active", string.Empty).Trim();
@@ -126,11 +127,11 @@ namespace Notification
             emailMultiView.ActiveViewIndex = 0;
             pushMultiView.Visible = false;
 
-            gridEmail.DataSource = EmailItem.LoadData(gridEmail.PageIndex, gridEmail.PageSize);
+            gridEmail.DataSource = await EmailItem.LoadData(gridEmail.PageIndex, gridEmail.PageSize);
             gridEmail.DataBind();
         }
 
-        protected void lnkPush_Click(object sender, EventArgs e)
+        protected async void lnkPush_Click(object sender, EventArgs e)
         {
             lnkPush.CssClass += " active";
             lnkEmails.CssClass = lnkPush.CssClass.Replace("active", string.Empty).Trim();
@@ -138,7 +139,7 @@ namespace Notification
             pushMultiView.ActiveViewIndex = 0;
             pushMultiView.Visible = true;
 
-            gridPush.DataSource = PushItem.LoadData(gridPush.PageIndex, gridPush.PageSize);
+            gridPush.DataSource = await PushItem.LoadData(gridPush.PageIndex, gridPush.PageSize);
             gridPush.DataBind();
         }
     }

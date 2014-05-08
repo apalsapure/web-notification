@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Appacitive.Sdk;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Security;
 
@@ -8,15 +10,16 @@ namespace Notification.Models
 {
     public class AppacitiveMembershipProvider : MembershipProvider
     {
+        private string _applicationName = "appacitive-push-demo";
         public override string ApplicationName
         {
             get
             {
-                throw new NotImplementedException();
+                return _applicationName;
             }
             set
             {
-                throw new NotImplementedException();
+                _applicationName = value;
             }
         }
 
@@ -28,42 +31,6 @@ namespace Notification.Models
         public override bool ChangePasswordQuestionAndAnswer(string username, string password, string newPasswordQuestion, string newPasswordAnswer)
         {
             throw new NotImplementedException();
-        }
-
-        public MembershipUser CreateUser(string username, string password, string email, string firstname, string lastname, out MembershipCreateStatus status)
-        {
-            ValidatePasswordEventArgs args = new ValidatePasswordEventArgs(username, password, true);
-
-            OnValidatingPassword(args);
-
-            if (args.Cancel)
-            {
-                status = MembershipCreateStatus.InvalidPassword;
-                return null;
-            }
-
-            if ((RequiresUniqueEmail && (GetUserNameByEmail(email) != String.Empty)))
-            {
-                status = MembershipCreateStatus.DuplicateEmail;
-                return null;
-            }
-
-            MembershipUser membershipUser = GetUser(username, false);
-
-            if (membershipUser == null)
-            {
-                //create user on appacitive
-                var user = new User(username, email, password, firstname, lastname);
-                string message = user.Save();
-                if (string.IsNullOrEmpty(message)) status = MembershipCreateStatus.Success;
-                else status = MembershipCreateStatus.ProviderError;
-                return GetUser(username, false);
-            }
-            else
-            {
-                status = MembershipCreateStatus.DuplicateUserName;
-            }
-            return CreateUser(username, password, email, null, null, true, username, out status);
         }
 
         public override MembershipUser CreateUser(string username, string password, string email, string passwordQuestion, string passwordAnswer, bool isApproved, object providerUserKey, out MembershipCreateStatus status)
@@ -78,22 +45,22 @@ namespace Notification.Models
 
         public override bool EnablePasswordReset
         {
-            get { throw new NotImplementedException(); }
+            get { return false; }
         }
 
         public override bool EnablePasswordRetrieval
         {
-            get { throw new NotImplementedException(); }
+            get { return false; }
         }
 
         public override MembershipUserCollection FindUsersByEmail(string emailToMatch, int pageIndex, int pageSize, out int totalRecords)
         {
-            throw new NotImplementedException();
+            return GetMatchingUsers(Query.Property("email").Like(emailToMatch), pageIndex, pageSize, out totalRecords);
         }
 
         public override MembershipUserCollection FindUsersByName(string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
         {
-            throw new NotImplementedException();
+            return GetMatchingUsers(Query.Property("username").Like(usernameToMatch), pageIndex, pageSize, out totalRecords);
         }
 
         public override MembershipUserCollection GetAllUsers(int pageIndex, int pageSize, out int totalRecords)
@@ -113,7 +80,15 @@ namespace Notification.Models
 
         public override MembershipUser GetUser(string username, bool userIsOnline)
         {
-            throw new NotImplementedException();
+            var totalRecords = 0;
+            var collection = GetMatchingUsers(Query.Property("username").IsEqualTo(username), 0, 20, out totalRecords);
+            if (totalRecords == 0) return null;
+            else
+            {
+                var list = new MembershipUser[collection.Count];
+                collection.CopyTo(list, 0);
+                return list[0];
+            }
         }
 
         public override MembershipUser GetUser(object providerUserKey, bool userIsOnline)
@@ -123,7 +98,15 @@ namespace Notification.Models
 
         public override string GetUserNameByEmail(string email)
         {
-            throw new NotImplementedException();
+            var totalRecords = 0;
+            var collection = GetMatchingUsers(Query.Property("email").IsEqualTo(email), 0, 20, out totalRecords);
+            if (totalRecords == 0) return null;
+            else
+            {
+                var list = new MembershipUser[collection.Count];
+                collection.CopyTo(list, 0);
+                return list[0].UserName;
+            }
         }
 
         public override int MaxInvalidPasswordAttempts
@@ -163,7 +146,7 @@ namespace Notification.Models
 
         public override bool RequiresUniqueEmail
         {
-            get { throw new NotImplementedException(); }
+            get { return true; }
         }
 
         public override string ResetPassword(string username, string answer)
@@ -183,7 +166,77 @@ namespace Notification.Models
 
         public override bool ValidateUser(string username, string password)
         {
-            throw new NotImplementedException();
+            var task = Task.Run<string>(() => User.Authenticate(username, password));
+            return string.IsNullOrEmpty(task.Result);
+        }
+
+        #region Public Methods
+        public MembershipUser CreateUser(string username, string password, string email, string firstname, string lastname, out MembershipCreateStatus status)
+        {
+            ValidatePasswordEventArgs args = new ValidatePasswordEventArgs(username, password, true);
+
+            OnValidatingPassword(args);
+
+            if (args.Cancel)
+            {
+                status = MembershipCreateStatus.InvalidPassword;
+                return null;
+            }
+
+            if ((RequiresUniqueEmail && (GetUserNameByEmail(email) != String.Empty)))
+            {
+                status = MembershipCreateStatus.DuplicateEmail;
+                return null;
+            }
+
+            MembershipUser membershipUser = GetUser(username, false);
+
+            if (membershipUser == null)
+            {
+                //create user on appacitive
+                var user = new User(username, email, password, firstname, lastname);
+                var task = Task.Run<string>(() => user.Save());
+                if (string.IsNullOrEmpty(task.Result))
+                {
+                    status = MembershipCreateStatus.Success;
+                    return GetUser(username, false);
+                }
+                else
+                {
+                    status = MembershipCreateStatus.ProviderError;
+                    return null;
+                }                
+            }
+            else
+            {
+                status = MembershipCreateStatus.DuplicateUserName;
+                return null;
+            }
+        }
+        #endregion
+
+        #region Private Helper Methods
+        private MembershipUserCollection GetMatchingUsers(IQuery query, int pageIndex, int pageSize, out int totalRecords)
+        {
+            var task = Task.Run<PagedList<APUser>>(() => APUsers.FindAllAsync(query, page: pageIndex, pageSize: pageSize, orderBy: "__id", sortOrder: SortOrder.Ascending));
+
+            totalRecords = task.Result.TotalRecords;
+            var result = new MembershipUserCollection();
+            task.Result.ForEach((u) =>
+            {
+                result.Add(u.ToMembershipUser());
+            });
+            return result;
+        }
+        #endregion
+    }
+
+    public static class MembershipProviderExtensions
+    {
+        private static readonly string _providerName = "appacitive-sdk";
+        public static MembershipUser ToMembershipUser(this APUser user)
+        {
+            return new MembershipUser(_providerName, user.Username, user.Id, user.Email, null, null, true, false, user.CreatedAt, user.LastUpdatedAt, user.LastUpdatedAt, DateTime.MinValue, DateTime.MinValue);
         }
     }
 }
