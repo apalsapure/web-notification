@@ -28,7 +28,7 @@
                                 <asp:GridView runat="server" ID="gridEmail" AutoGenerateColumns="false"
                                     CssClass="message-table" ShowHeader="false" CellSpacing="0" CellPadding="0" AllowPaging="true"
                                     PagerSettings-Mode="NextPreviousFirstLast" PagerStyle-HorizontalAlign="Right" PageSize="10" PagerSettings-Visible="true"
-                                    OnRowDataBound="gridEmail_RowDataBound" AutoGenerateSelectButton="true"
+                                    OnRowDataBound="gridEmail_RowDataBound" AutoGenerateSelectButton="true" PagerStyle-CssClass="grid-pager"
                                     OnSelectedIndexChanged="gridEmail_SelectedIndexChanged" OnPageIndexChanging="gridEmail_PageIndexChanging">
                                     <Columns>
                                         <asp:BoundField DataField="Id" ItemStyle-CssClass="hide" />
@@ -36,6 +36,9 @@
                                         <asp:BoundField DataField="Subject" ItemStyle-CssClass="message-subject ellipsis" />
                                         <asp:BoundField DataField="Created" DataFormatString="{0:d}" ItemStyle-CssClass="message-timestamp ellipsis" />
                                     </Columns>
+                                    <EmptyDataTemplate>
+                                        <span class="text-muted">No email record found.</span>
+                                    </EmptyDataTemplate>
                                 </asp:GridView>
                             </div>
                         </asp:View>
@@ -138,6 +141,9 @@
                                         <asp:BoundField DataField="Message" ItemStyle-CssClass="message-subject ellipsis" />
                                         <asp:BoundField DataField="Created" DataFormatString="{0:d}" ItemStyle-CssClass="message-timestamp ellipsis" />
                                     </Columns>
+                                    <EmptyDataTemplate>
+                                        <span class="no-record text-muted">No push record found.</span>
+                                    </EmptyDataTemplate>
                                 </asp:GridView>
                             </div>
                         </asp:View>

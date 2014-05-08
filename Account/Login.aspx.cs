@@ -20,5 +20,10 @@ namespace Notification.Account
                 RegisterHyperLink.NavigateUrl += "?ReturnUrl=" + returnUrl;
             }
         }
+
+        protected void Unnamed_LoggingIn(object sender, LoginCancelEventArgs e)
+        {
+
+        }
     }
 }

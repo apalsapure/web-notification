@@ -62,6 +62,7 @@ namespace Notification.Models
                 //populate empty list for paging
                 var dummyList = FillDataSet(result.TotalRecords);
                 var itemsToPopulate = pageSize;
+                if (result.TotalRecords < pageSize) itemsToPopulate = result.TotalRecords;
                 var counter = pageCount * pageSize;
                 while (itemsToPopulate-- > 0)
                 {

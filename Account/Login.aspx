@@ -7,7 +7,7 @@
     </hgroup>
     <section id="loginForm">
         <h2>Use a local account to log in.</h2>
-        <asp:Login runat="server" ViewStateMode="Disabled" RenderOuterTable="false">
+        <asp:Login runat="server" ViewStateMode="Disabled" RenderOuterTable="false" OnLoggingIn="Unnamed_LoggingIn">
             <LayoutTemplate>
                 <p class="validation-summary-errors">
                     <asp:Literal runat="server" ID="FailureText" />
@@ -38,10 +38,5 @@
             <asp:HyperLink runat="server" ID="RegisterHyperLink" ViewStateMode="Disabled">Register</asp:HyperLink>
             if you don't have an account.
         </p>
-    </section>
-
-    <section id="socialLoginForm">
-        <h2>Use another service to log in.</h2>
-        <uc:OpenAuthProviders runat="server" ID="OpenAuthLogin" />
     </section>
 </asp:Content>

@@ -34,6 +34,88 @@ namespace Notification.Models
             catch (Exception ex) { return ex.Message; }
         }
 
+        public async Task<string> CreateUser(string username, string password, string email, string firstname, string lastname)
+        {
+
+            if (string.IsNullOrEmpty(GetUserNameByEmail(email)) == false)
+            {
+                return "User with same email address already exists.";
+            }
+
+            var user = GetUser(username, false);
+
+            if (user == null)
+            {
+                //create user on appacitive
+                var state = HttpContext.Current;
+                try
+                {
+                    user = new User(username, email, password, firstname, lastname);
+                    await user.Save();
+                    return null;
+                }
+                catch
+                {
+                    return "Unable to connect to server. Please try again.";
+                }
+            }
+            else
+            {
+                return "User with same user name already exists.";
+            }
+        }
+
+        #region Private Helper Methods
+        private string GetUserNameByEmail(string email)
+        {
+            var totalRecords = 0;
+            var collection = GetMatchingUsers(Query.Property("email").IsEqualTo(email), 0, 20, out totalRecords);
+            if (totalRecords == 0) return null;
+            else
+            {
+                return collection[0].Username;
+            }
+        }
+
+        private List<User> GetMatchingUsers(IQuery query, int pageIndex, int pageSize, out int totalRecords)
+        {
+            var state = HttpContext.Current;
+            try
+            {
+                var task = Task.Run<PagedList<APUser>>(
+                            () =>
+                            {
+                                HttpContext.Current = state as HttpContext;
+                                return APUsers.FindAllAsync(query, page: pageIndex, pageSize: pageSize, orderBy: "__id", sortOrder: SortOrder.Ascending);
+                            });
+
+                totalRecords = task.Result.TotalRecords;
+                var result = new List<User>();
+                task.Result.ForEach((u) =>
+                {
+                    result.Add(u as User);
+                });
+                return result;
+            }
+            finally
+            {
+                //restore the context
+                HttpContext.Current = state;
+            }
+        }
+
+        private User GetUser(string username, bool userIsOnline)
+        {
+            var totalRecords = 0;
+            var collection = GetMatchingUsers(Query.Property("username").IsEqualTo(username), 0, 20, out totalRecords);
+            if (totalRecords == 0) return null;
+            else
+            {
+                return collection[0];
+            }
+        }
+        #endregion
+
         public async Task<string> Save()
         {
             try

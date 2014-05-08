@@ -365,8 +365,8 @@ select { height: 28px; border: solid 1px #ddd; padding-left: 4px; margin-left: 5
 .message-table, .item-details { background-color: #fff; width: 100%; }
     .message-table tr { border-bottom: solid 1px #efefef; cursor: pointer; }
         .message-table tr:hover { background-color: #ddd; }
-        .message-table tr:last-child, .message-table tr:last-child:hover { cursor: default; background-color: #fff; border-bottom: none; }
-            .message-table tr:last-child td { line-height: 24px; }
+    .message-table .grid-pager, .message-table .grid-pager:hover, .message-table .no-record:hover { cursor: default; background-color: #fff; border-bottom: none; }
+    .message-table tr:last-child td { line-height: 24px; }
     .message-table td { padding: 3px 12px 2px; line-height: 30px; display: inline-block; }
     .message-table a:hover { background-color: #fff; }
 .message-to { width: 20%; min-width: 120px; }
