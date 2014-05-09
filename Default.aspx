@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Notifications" Async="true" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Notification._Default" %>
+﻿<%@ Page Title="Notifications" Async="true" EnableSessionState="True" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Notification._Default" %>
 
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
     <asp:UpdateProgress runat="server" AssociatedUpdatePanelID="updatePanel">
@@ -22,13 +22,14 @@
                             <asp:LinkButton CssClass="col-md-12" ID="lnkPush" runat="server" Text="Push Notifications" OnClick="lnkPush_Click" />
                         </div>
                     </div>
-                    <asp:MultiView ID="emailMultiView" runat="server" ActiveViewIndex="0">
-                        <asp:View ID="emailListView" runat="server">
-                            <div class="col-md-10">
+                    <div class="col-md-10 right-container">
+                        <asp:MultiView ID="emailMultiView" runat="server" ActiveViewIndex="0">
+                            <asp:View ID="emailListView" runat="server">
+
                                 <asp:GridView runat="server" ID="gridEmail" AutoGenerateColumns="false"
                                     CssClass="message-table" ShowHeader="false" CellSpacing="0" CellPadding="0" AllowPaging="true"
                                     PagerSettings-Mode="NextPreviousFirstLast" PagerStyle-HorizontalAlign="Right" PageSize="10" PagerSettings-Visible="true"
-                                    OnRowDataBound="gridEmail_RowDataBound" AutoGenerateSelectButton="true" PagerStyle-CssClass="grid-pager"
+                                    OnRowDataBound="gridEmail_RowDataBound" AutoGenerateSelectButton="true" PagerStyle-CssClass="grid-pager" EmptyDataRowStyle-CssClass="grid-pager"
                                     OnSelectedIndexChanged="gridEmail_SelectedIndexChanged" OnPageIndexChanging="gridEmail_PageIndexChanging">
                                     <Columns>
                                         <asp:BoundField DataField="Id" ItemStyle-CssClass="hide" />
@@ -37,13 +38,12 @@
                                         <asp:BoundField DataField="Created" DataFormatString="{0:d}" ItemStyle-CssClass="message-timestamp ellipsis" />
                                     </Columns>
                                     <EmptyDataTemplate>
-                                        <span class="text-muted">No email record found.</span>
+                                        <span class="no-record text-muted">No email record found.</span>
                                     </EmptyDataTemplate>
                                 </asp:GridView>
-                            </div>
-                        </asp:View>
-                        <asp:View ID="emailDetailView" runat="server">
-                            <div class="col-md-10">
+
+                            </asp:View>
+                            <asp:View ID="emailDetailView" runat="server">
                                 <table class="item-details">
                                     <tr>
                                         <td>
@@ -124,16 +124,14 @@
                                         </asp:View>
                                     </asp:MultiView>
                                 </table>
-                            </div>
-                        </asp:View>
-                    </asp:MultiView>
-                    <asp:MultiView ID="pushMultiView" runat="server" ActiveViewIndex="0">
-                        <asp:View ID="pushListView" runat="server">
-                            <div class="col-md-10">
+                            </asp:View>
+                        </asp:MultiView>
+                        <asp:MultiView ID="pushMultiView" runat="server" ActiveViewIndex="0">
+                            <asp:View ID="pushListView" runat="server">
                                 <asp:GridView runat="server" ID="gridPush" AutoGenerateColumns="false"
                                     CssClass="message-table" ShowHeader="false" CellSpacing="0" CellPadding="0" AllowPaging="true"
                                     PagerSettings-Mode="NextPreviousFirstLast" PagerStyle-HorizontalAlign="Right" PageSize="10" PagerSettings-Visible="true"
-                                    OnRowDataBound="gridPush_RowDataBound" AutoGenerateSelectButton="true"
+                                    OnRowDataBound="gridPush_RowDataBound" AutoGenerateSelectButton="true" PagerStyle-CssClass="grid-pager" EmptyDataRowStyle-CssClass="grid-pager"
                                     OnSelectedIndexChanged="gridPush_SelectedIndexChanged" OnPageIndexChanging="gridPush_PageIndexChanging">
                                     <Columns>
                                         <asp:BoundField DataField="Id" ItemStyle-CssClass="hide" />
@@ -145,10 +143,8 @@
                                         <span class="no-record text-muted">No push record found.</span>
                                     </EmptyDataTemplate>
                                 </asp:GridView>
-                            </div>
-                        </asp:View>
-                        <asp:View ID="pushDetailsView" runat="server">
-                            <div class="col-md-10">
+                            </asp:View>
+                            <asp:View ID="pushDetailsView" runat="server">
                                 <table class="item-details">
                                     <tr>
                                         <td>
@@ -182,10 +178,19 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="pts pbm">
+                                                <strong>Expiry</strong>
+                                                <br />
+                                                <label id="lblExpiry" runat="server"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </table>
-                            </div>
-                        </asp:View>
-                    </asp:MultiView>
+                            </asp:View>
+                        </asp:MultiView>
+                    </div>
                 </div>
             </div>
         </ContentTemplate>

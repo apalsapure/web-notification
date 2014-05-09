@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Async="true" Title="Compose" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Compose.aspx.cs" Inherits="Notification.Compose" %>
+﻿<%@ Page Language="C#" Async="true" ValidateRequest="false" Title="Compose" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Compose.aspx.cs" Inherits="Notification.Compose" %>
 
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
     <div class="composer">
@@ -56,6 +56,13 @@
                                                     <label class="text-muted">Cc</label>
                                                     <br />
                                                     <asp:TextBox ID="txtEmailCC" runat="server"></asp:TextBox>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="pts">
+                                                    <asp:CheckBox ID="chkSettings" runat="server" Text="&nbsp;Use Custom SMTP"></asp:CheckBox>
                                                 </div>
                                             </td>
                                         </tr>

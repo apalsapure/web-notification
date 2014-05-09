@@ -57,12 +57,13 @@ namespace Notification.Models
                 var list = new List<PushItem>();
 
                 //get the items from appacitive
-                var result = await APObjects.FindAllAsync(APPACITIVE_TYPE, page: pageCount, pageSize: pageSize);
+                var result = await App.UserContext.LoggedInUser.GetConnectedObjectsAsync("user_push", pageNumber: pageCount, pageSize: pageSize);
                 result.ForEach((r) => { list.Add(r as PushItem); });
 
                 //populate empty list for paging
                 var dummyList = FillDataSet(result.TotalRecords);
                 var itemsToPopulate = pageSize;
+                if (result.TotalRecords < pageSize) itemsToPopulate = result.TotalRecords;
                 var counter = pageCount * pageSize;
                 while (itemsToPopulate-- > 0)
                 {
@@ -118,10 +119,10 @@ namespace Notification.Models
                 {
                     case 0: push = PushNotification.ToChannels(message, this.To.Split(',')); break;
                     case 1: push = PushNotification.ToDeviceIds(message, this.To.Split(',')); break;
-                    default: push = PushNotification.Broadcast(message); break;
+                    default: push = PushNotification.Broadcast(message); this.To = "Broadcast"; break;
                 }
                 if (string.IsNullOrEmpty(this.Badge) == false) push = push.WithBadge(this.Badge);
-                push = push.WithExpiry(push.ExpiryInSeconds);
+                if (push.ExpiryInSeconds > 0) push = push.WithExpiry(push.ExpiryInSeconds);
 
                 //for this sample we will send toast notification
                 var toast = new ToastNotification(this.From, this.Message, "/MainPage.xaml");

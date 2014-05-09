@@ -45,6 +45,11 @@ namespace Notification.Models
             get { return base.Get<string>("templatename"); }
             set { base.Set<string>("templatename", value); }
         }
+        public bool WithCustomSettings
+        {
+            get { return base.Get<bool>("withcustomsettings"); }
+            set { base.Set<bool>("withcustomsettings", value); }
+        }
         public Dictionary<string, string> PlaceHolders { get; set; }
         public DateTime Created { get { return base.CreatedAt; } }
         public string CreatedStr { get { return Created.ToString("ddd dd/MM/yy hh:mm tt"); } }
@@ -56,7 +61,7 @@ namespace Notification.Models
                 var list = new List<EmailItem>();
 
                 //get the items from appacitive
-                var result = await APObjects.FindAllAsync(APPACITIVE_TYPE, page: pageCount, pageSize: pageSize);
+                var result = await App.UserContext.LoggedInUser.GetConnectedObjectsAsync("user_email", pageNumber: pageCount, pageSize: pageSize);
                 result.ForEach((r) => { list.Add(r as EmailItem); });
 
                 //populate empty list for paging
@@ -127,11 +132,10 @@ namespace Notification.Models
         {
             try
             {
-                if (string.IsNullOrEmpty(this.CC)) this.CC = string.Empty;
                 var to = new List<string>();
                 var cc = new List<string>(); ;
                 to.AddRange(this.To.Split(','));
-                cc.AddRange(this.CC.Split(','));
+                if (string.IsNullOrEmpty(this.CC) == false) cc.AddRange(this.CC.Split(','));
                 var email = NewEmail
                                 .Create(this.Subject)
                                 .To(to, cc)
@@ -140,6 +144,18 @@ namespace Notification.Models
                     email = email.WithBody(this.Body, true);
                 else
                     email.WithTemplateBody(this.TemplateName, this.PlaceHolders, true);
+
+                //use custom SMPT settings
+                if (this.WithCustomSettings)
+                {
+                    email.Server = new SmtpServer();
+                    email.Server.Username = App.UserContext.LoggedInUser.GetAttribute("smtp:username");
+                    email.Server.Password = App.UserContext.LoggedInUser.GetAttribute("smtp:password");
+                    email.Server.Host = App.UserContext.LoggedInUser.GetAttribute("smtp:host");
+                    email.Server.Port = int.Parse(App.UserContext.LoggedInUser.GetAttribute("smtp:port"));
+                    email.Server.EnableSSL = bool.Parse(App.UserContext.LoggedInUser.GetAttribute("smtp:ssl"));
+                }
+
                 await email.SendAsync();
             }
             catch (Exception ex) { return ex.Message; }

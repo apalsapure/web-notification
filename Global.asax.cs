@@ -30,6 +30,10 @@ namespace Notification
             Appacitive.Sdk.App.Types.MapObjectType<PushItem>(PushItem.APPACITIVE_TYPE);
         }
 
+        void Session_Start(object sender, EventArgs e)
+        {
+        }
+
         void Application_End(object sender, EventArgs e)
         {
             //  Code that runs on application shutdown

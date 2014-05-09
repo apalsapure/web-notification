@@ -41,7 +41,7 @@ h5, h6 { font-size: 1em; }
 
 #body { background-color: #efeeef; clear: both; padding-bottom: 35px; }
 
-.main-content { background: url("../Images/accent.png") no-repeat; padding-left: 10px; padding-top: 40px; }
+.main-content { padding-left: 10px; padding-top: 40px; }
 
 .featured + .main-content { background: url("../Images/heroAccent.png") no-repeat; }
 
@@ -365,10 +365,12 @@ select { height: 28px; border: solid 1px #ddd; padding-left: 4px; margin-left: 5
 .message-table, .item-details { background-color: #fff; width: 100%; }
     .message-table tr { border-bottom: solid 1px #efefef; cursor: pointer; }
         .message-table tr:hover { background-color: #ddd; }
-    .message-table .grid-pager, .message-table .grid-pager:hover, .message-table .no-record:hover { cursor: default; background-color: #fff; border-bottom: none; }
-    .message-table tr:last-child td { line-height: 24px; }
+    .message-table .grid-pager, .message-table .grid-pager:hover, .message-table .no-record, .message-table .no-record:hover { padding: 4px 12px; cursor: default; background-color: #fff; border-bottom: none; }
+        .message-table .grid-pager span { line-height: 30px; }
+    .message-table .grid-pager td { line-height: 24px; }
     .message-table td { padding: 3px 12px 2px; line-height: 30px; display: inline-block; }
     .message-table a:hover { background-color: #fff; }
+.right-container { min-height: 100px !important; background-color: #fff; padding: 0px !important; }
 .message-to { width: 20%; min-width: 120px; }
 .message-subject { width: 69%; }
 .message-timestamp { max-width: 10%; padding-right: 0px; text-align: right; }
@@ -382,7 +384,7 @@ select { height: 28px; border: solid 1px #ddd; padding-left: 4px; margin-left: 5
     .item-details label { font-weight: normal; }
     .item-details td { width: 100%; padding-left: 12px; }
     .item-details h3 { margin-top: 4px; line-height: 35px; border-bottom: solid 1px #aaa; font-size: 1.4em; }
-    .item-details iframe { border: none; width: 100%; }
+    .item-details iframe { border: none; width: 100%; margin: 0 0 0 -7px; }
 .placeHolderGrid { margin-top: 5px; }
     .placeHolderGrid td { width: 65%; line-height: 30px; padding-right: 18px; }
         .placeHolderGrid td:first-child { width: 30%; }

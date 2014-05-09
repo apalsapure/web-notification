@@ -14,32 +14,11 @@ namespace Notification.Account
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            RegisterUser.ContinueDestinationPageUrl = Request.QueryString["ReturnUrl"];
         }
 
-        protected void RegisterUser_CreatedUser(object sender, EventArgs e)
+        protected async void btnRegister_Click(object sender, EventArgs e)
         {
-            FormsAuthentication.SetAuthCookie(RegisterUser.UserName, createPersistentCookie: false);
-
-            string continueUrl = RegisterUser.ContinueDestinationPageUrl;
-            if (!OpenAuth.IsLocalUrl(continueUrl))
-            {
-                continueUrl = "~/";
-            }
-            Response.Redirect(continueUrl);
-        }
-
-        protected void RegisterUser_CreatingUser(object sender, LoginCancelEventArgs e)
-        {
-            TextBox TextboxfirstName = (TextBox)RegisterUser.CreateUserStep.ContentTemplateContainer.FindControl("FirstName");
-            TextBox TextboxLastName = (TextBox)RegisterUser.CreateUserStep.ContentTemplateContainer.FindControl("LastName");
-            TextBox TextboxName = (TextBox)RegisterUser.CreateUserStep.ContentTemplateContainer.FindControl("Name");
-            TextBox TextboxEmail = (TextBox)RegisterUser.CreateUserStep.ContentTemplateContainer.FindControl("Email");
-            TextBox TextboxPassword = (TextBox)RegisterUser.CreateUserStep.ContentTemplateContainer.FindControl("Password");
-
-            MembershipCreateStatus status;
-            AppacitiveMembershipProvider mp = (AppacitiveMembershipProvider)Membership.Provider;
-            var split = TextboxName.Text.Split(' ').ToList();
+            var split = Name.Text.Split(' ').ToList();
             string firstName = split[0], lastName = "";
             if (split.Count > 0)
             {
@@ -47,7 +26,13 @@ namespace Notification.Account
                 lastName = string.Join(" ", split);
             }
 
-            mp.CreateUser(TextboxEmail.Text, TextboxPassword.Text, TextboxEmail.Text, firstName, lastName, out status);
+            var message = await Models.User.CreateUser(Email.Text, Password.Text, Email.Text, firstName, lastName);
+            if (string.IsNullOrEmpty(message))
+            {
+                FormsAuthentication.SetAuthCookie(Email.Text, createPersistentCookie: false);
+                Response.Redirect("~/");
+            }
+            else ErrorMessage.Text = message;
         }
     }
 }

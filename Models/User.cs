@@ -34,15 +34,15 @@ namespace Notification.Models
             catch (Exception ex) { return ex.Message; }
         }
 
-        public async Task<string> CreateUser(string username, string password, string email, string firstname, string lastname)
+        public static async Task<string> CreateUser(string username, string password, string email, string firstname, string lastname)
         {
 
-            if (string.IsNullOrEmpty(GetUserNameByEmail(email)) == false)
+            if (string.IsNullOrEmpty(await GetUserNameByEmail(email)) == false)
             {
                 return "User with same email address already exists.";
             }
 
-            var user = GetUser(username, false);
+            var user = await GetUser(username, false);
 
             if (user == null)
             {
@@ -65,11 +65,30 @@ namespace Notification.Models
             }
         }
 
+        public static async Task<string> SaveSMTPSettings(string username, string password, string host, int port, bool enableSSL)
+        {
+            try
+            {
+                var user = App.UserContext.LoggedInUser;
+                user.SetAttribute("smtp:username", username);
+                user.SetAttribute("smtp:password", password);
+                user.SetAttribute("smtp:host", host);
+                user.SetAttribute("smtp:port", port.ToString());
+                user.SetAttribute("smtp:ssl", enableSSL.ToString());
+                await user.SaveAsync();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
         #region Private Helper Methods
-        private string GetUserNameByEmail(string email)
+        private async static Task<string> GetUserNameByEmail(string email)
         {
             var totalRecords = 0;
-            var collection = GetMatchingUsers(Query.Property("email").IsEqualTo(email), 0, 20, out totalRecords);
+            var collection = await GetMatchingUsers(Query.Property("email").IsEqualTo(email), 0, 20);
             if (totalRecords == 0) return null;
             else
             {
@@ -77,37 +96,22 @@ namespace Notification.Models
             }
         }
 
-        private List<User> GetMatchingUsers(IQuery query, int pageIndex, int pageSize, out int totalRecords)
+        private async static Task<List<User>> GetMatchingUsers(IQuery query, int pageIndex, int pageSize)
         {
-            var state = HttpContext.Current;
-            try
-            {
-                var task = Task.Run<PagedList<APUser>>(
-                            () =>
-                            {
-                                HttpContext.Current = state as HttpContext;
-                                return APUsers.FindAllAsync(query, page: pageIndex, pageSize: pageSize, orderBy: "__id", sortOrder: SortOrder.Ascending);
-                            });
+            var users = await APUsers.FindAllAsync(query, page: pageIndex, pageSize: pageSize, orderBy: "__id", sortOrder: SortOrder.Ascending);
 
-                totalRecords = task.Result.TotalRecords;
-                var result = new List<User>();
-                task.Result.ForEach((u) =>
-                {
-                    result.Add(u as User);
-                });
-                return result;
-            }
-            finally
+            var result = new List<User>();
+            users.ForEach((u) =>
             {
-                //restore the context
-                HttpContext.Current = state;
-            }
+                result.Add(u as User);
+            });
+            return result;
         }
 
-        private User GetUser(string username, bool userIsOnline)
+        private async static Task<User> GetUser(string username, bool userIsOnline)
         {
             var totalRecords = 0;
-            var collection = GetMatchingUsers(Query.Property("username").IsEqualTo(username), 0, 20, out totalRecords);
+            var collection = await GetMatchingUsers(Query.Property("username").IsEqualTo(username), 0, 20);
             if (totalRecords == 0) return null;
             else
             {

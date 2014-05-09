@@ -1,42 +1,46 @@
-﻿<%@ Page Title="Log in" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="Notification.Account.Login" %>
-<%@ Register Src="~/Account/OpenAuthProviders.ascx" TagPrefix="uc" TagName="OpenAuthProviders" %>
+﻿<%@ Page Title="Log in" EnableSessionState="True" Async="true" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="Notification.Account.Login" %>
 
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
-    <hgroup class="title">
-        <h1><%: Title %>.</h1>
-    </hgroup>
-    <section id="loginForm">
-        <h2>Use a local account to log in.</h2>
-        <asp:Login runat="server" ViewStateMode="Disabled" RenderOuterTable="false" OnLoggingIn="Unnamed_LoggingIn">
-            <LayoutTemplate>
-                <p class="validation-summary-errors">
-                    <asp:Literal runat="server" ID="FailureText" />
-                </p>
-                <fieldset>
-                    <legend>Log in Form</legend>
-                    <ol>
-                        <li>
-                            <asp:Label runat="server" AssociatedControlID="UserName">User name</asp:Label>
-                            <asp:TextBox runat="server" ID="UserName" />
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="UserName" CssClass="field-validation-error" ErrorMessage="The user name field is required." />
-                        </li>
-                        <li>
-                            <asp:Label runat="server" AssociatedControlID="Password">Password</asp:Label>
-                            <asp:TextBox runat="server" ID="Password" TextMode="Password" />
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="Password" CssClass="field-validation-error" ErrorMessage="The password field is required." />
-                        </li>
-                        <li>
-                            <asp:CheckBox runat="server" ID="RememberMe" />
-                            <asp:Label runat="server" AssociatedControlID="RememberMe" CssClass="checkbox">Remember me?</asp:Label>
-                        </li>
-                    </ol>
-                    <asp:Button runat="server" CommandName="Login" Text="Log in" />
-                </fieldset>
-            </LayoutTemplate>
-        </asp:Login>
-        <p>
-            <asp:HyperLink runat="server" ID="RegisterHyperLink" ViewStateMode="Disabled">Register</asp:HyperLink>
-            if you don't have an account.
+    <div class="mbl" style="border-bottom: solid 1px #ddd;">
+        <hgroup class="title">
+            <h1><%: Title %>.</h1>
+        </hgroup>
+    </div>
+    <div class="ptm">
+        <p class="validation-summary-errors">
+            <asp:Label ID="ErrorMessage" runat="server"></asp:Label>
         </p>
-    </section>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <asp:Label runat="server" CssClass="col-sm-2 control-label" AssociatedControlID="UserName">Email Address</asp:Label>
+                <div class="col-sm-10">
+                    <asp:TextBox runat="server" ID="UserName" CssClass="form-control" />
+                    <asp:RequiredFieldValidator runat="server" ControlToValidate="UserName" CssClass="field-validation-error" ErrorMessage="The user name field is required." />
+                </div>
+            </div>
+            <div class="form-group">
+                <asp:Label runat="server" CssClass="col-sm-2 control-label" AssociatedControlID="Password">Password</asp:Label>
+                <div class="col-sm-10">
+                    <asp:TextBox runat="server" ID="Password" TextMode="Password" CssClass="form-control" />
+                    <asp:RequiredFieldValidator runat="server" ControlToValidate="Password" CssClass="field-validation-error" ErrorMessage="The password field is required." />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <asp:CheckBox runat="server" ID="RememberMe" />
+                    <asp:Label runat="server" AssociatedControlID="RememberMe" CssClass="checkbox">Remember me?</asp:Label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10 ptl pbm">
+                    <asp:Button ID="btnLogin" runat="server" CssClass="form-control btn-primary" CommandName="Login" Text="Log in" OnClick="btnLogin_Click" />
+                </div>
+            </div>
+        </form>
+
+        <div class="col-sm-offset-2 col-sm-10 ptm pbm">
+            <asp:HyperLink runat="server" ID="RegisterHyperLink" ViewStateMode="Disabled" Style="text-decoration: underline">Register</asp:HyperLink>
+            if you don't have an account.
+        </div>
+    </div>
 </asp:Content>

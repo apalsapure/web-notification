@@ -94,6 +94,7 @@ namespace Notification
             lblPushTo.InnerText = selectedItem.To;
             lblPushFrom.InnerText = selectedItem.From;
             lblPushCreated.InnerText = selectedItem.CreatedStr;
+            lblExpiry.InnerHtml = selectedItem.Expiry > 0 ? selectedItem.Expiry.ToString() : "-";
             lblPushBadge.InnerText = selectedItem.Badge == null ? "-" : selectedItem.Badge;
 
             gridPush.SelectedIndex = -1;

@@ -1,4 +1,5 @@
-﻿using Notification.Models;
+﻿using Appacitive.Sdk;
+using Notification.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace Notification
 
         protected void drpPushToType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            txtPushTo.Visible = drpPushToType.SelectedIndex != 3;
+            txtPushTo.Visible = drpPushToType.SelectedIndex != 2;
         }
 
         protected void drpCompose_SelectedIndexChanged(object sender, EventArgs e)
@@ -66,11 +67,18 @@ namespace Notification
 
         protected async void btnSendEmail_Click(object sender, EventArgs e)
         {
+            if (chkSettings.Checked && App.UserContext.LoggedInUser.GetAttribute("smtp:username") == null)
+            {
+                lblEmailMessage.Text = "Setup the settings first.";
+                return;
+            }
+
             var emailItem = new EmailItem();
             emailItem.From = txtEmailFrom.Text;
             emailItem.To = txtEmailTo.Text;
             emailItem.CC = txtEmailCC.Text;
             emailItem.Subject = txtEmailSubject.Text;
+            emailItem.WithCustomSettings = chkSettings.Checked;
             if (multiEmailType.ActiveViewIndex == 0)
             {
                 emailItem.Body = txtEmailMessage.Text;

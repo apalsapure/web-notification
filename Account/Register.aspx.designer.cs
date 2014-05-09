@@ -13,21 +13,66 @@ namespace Notification.Account {
     public partial class Register {
         
         /// <summary>
-        /// RegisterUser control.
+        /// ErrorMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CreateUserWizard RegisterUser;
+        protected global::System.Web.UI.WebControls.Literal ErrorMessage;
         
         /// <summary>
-        /// RegisterUserWizardStep control.
+        /// Label1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CreateUserWizardStep RegisterUserWizardStep;
+        protected global::System.Web.UI.WebControls.Label Label1;
+        
+        /// <summary>
+        /// Name control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Name;
+        
+        /// <summary>
+        /// Email control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Email;
+        
+        /// <summary>
+        /// Password control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Password;
+        
+        /// <summary>
+        /// ConfirmPassword control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox ConfirmPassword;
+        
+        /// <summary>
+        /// btnRegister control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnRegister;
     }
 }
