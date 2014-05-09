@@ -10,6 +10,7 @@ namespace Notification.Models
     public class PushItem : APObject
     {
         public const string APPACITIVE_TYPE = "push";
+        public const string APPACITIVE_CONNECTION = "user_push";
 
         public PushItem() : base(APPACITIVE_TYPE) { }
 
@@ -47,6 +48,14 @@ namespace Notification.Models
         }
 
         public DateTime Created { get { return base.CreatedAt; } }
+        public string CreatedShortStr
+        {
+            get
+            {
+                if (Created.Date == DateTime.Now.Date) return Created.ToString("hh:mm tt");
+                else return Created.ToString("ddd dd/MM/yy hh:mm tt");
+            }
+        }
         public string CreatedStr { get { return Created.ToString("ddd dd/MM/yy hh:mm tt"); } }
 
 
@@ -57,21 +66,25 @@ namespace Notification.Models
                 var list = new List<PushItem>();
 
                 //get the items from appacitive
-                var result = await App.UserContext.LoggedInUser.GetConnectedObjectsAsync("user_push", pageNumber: pageCount, pageSize: pageSize);
+                var result = await App.UserContext.LoggedInUser.GetConnectedObjectsAsync(APPACITIVE_CONNECTION,
+                                                                        pageNumber: pageCount + 1,
+                                                                        pageSize: pageSize,
+                                                                        orderBy: "__id",
+                                                                        sortOrder: SortOrder.Descending);
                 result.ForEach((r) => { list.Add(r as PushItem); });
 
                 //populate empty list for paging
                 var dummyList = FillDataSet(result.TotalRecords);
-                var itemsToPopulate = pageSize;
-                if (result.TotalRecords < pageSize) itemsToPopulate = result.TotalRecords;
+                var itemsToPopulate = 0;
                 var counter = pageCount * pageSize;
-                while (itemsToPopulate-- > 0)
+
+                while (itemsToPopulate < pageSize)
                 {
                     if (counter >= result.TotalRecords) break;
                     dummyList[counter] = list[itemsToPopulate];
                     counter++;
+                    itemsToPopulate++;
                 }
-
                 return dummyList;
             }
             catch { return null; }
@@ -96,9 +109,9 @@ namespace Notification.Models
                 //we will create a connection between user and the push object
                 //when connection is saved, push object is automatically created
                 await Appacitive.Sdk.APConnection
-                                .New("user_push")
-                                .FromExistingObject("user", App.UserContext.LoggedInUser.Id)
-                                .ToNewObject("push", this)
+                                .New(APPACITIVE_CONNECTION)
+                                .FromExistingObject(User.APPACITIVE_TYPE, App.UserContext.LoggedInUser.Id)
+                                .ToNewObject(APPACITIVE_TYPE, this)
                                 .SaveAsync();
                 await this.SaveAsync();
             }
@@ -130,6 +143,18 @@ namespace Notification.Models
 
                 //send push
                 await push.SendAsync();
+
+                var tile = TileNotification.CreateNewFlipTile(new FlipTile
+                {
+                    BackContent = this.From,
+                    BackTitle = "New Message",
+                    FrontCount = "+0"
+                });
+
+                push.WithPlatformOptions(WindowsPhoneOptions.WithTile(tile));
+
+                await push.SendAsync();
+
                 return null;
             }
             catch (Exception ex)

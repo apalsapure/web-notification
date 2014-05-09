@@ -52,6 +52,14 @@ namespace Notification.Models
         }
         public Dictionary<string, string> PlaceHolders { get; set; }
         public DateTime Created { get { return base.CreatedAt; } }
+        public string CreatedShortStr
+        {
+            get
+            {
+                if (Created.Date == DateTime.Now.Date) return Created.ToString("hh:mm tt");
+                else return Created.ToString("ddd dd/MM/yy hh:mm tt");
+            }
+        }
         public string CreatedStr { get { return Created.ToString("ddd dd/MM/yy hh:mm tt"); } }
 
         public async static Task<List<EmailItem>> LoadData(int pageCount, int pageSize)
@@ -61,19 +69,24 @@ namespace Notification.Models
                 var list = new List<EmailItem>();
 
                 //get the items from appacitive
-                var result = await App.UserContext.LoggedInUser.GetConnectedObjectsAsync("user_email", pageNumber: pageCount, pageSize: pageSize);
+                var result = await App.UserContext.LoggedInUser.GetConnectedObjectsAsync("user_email",
+                                                                                        pageNumber: pageCount + 1,
+                                                                                        pageSize: pageSize,
+                                                                                        orderBy: "__id",
+                                                                                        sortOrder: SortOrder.Descending);
                 result.ForEach((r) => { list.Add(r as EmailItem); });
 
                 //populate empty list for paging
                 var dummyList = FillDataSet(result.TotalRecords);
-                var itemsToPopulate = pageSize;
-                if (result.TotalRecords < pageSize) itemsToPopulate = result.TotalRecords;
+                var itemsToPopulate = 0;
                 var counter = pageCount * pageSize;
-                while (itemsToPopulate-- > 0)
+
+                while (itemsToPopulate < pageSize)
                 {
                     if (counter >= result.TotalRecords) break;
                     dummyList[counter] = list[itemsToPopulate];
                     counter++;
+                    itemsToPopulate++;
                 }
                 return dummyList;
             }

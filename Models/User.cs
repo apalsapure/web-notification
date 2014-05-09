@@ -28,7 +28,10 @@ namespace Notification.Models
         {
             try
             {
-                await App.LoginAsync(new UsernamePasswordCredentials(userName, password)); ;
+                var creds = new UsernamePasswordCredentials(userName, password);
+                creds.MaxAttempts = int.MaxValue;
+                creds.TimeoutInSeconds = int.MaxValue;
+                await App.LoginAsync(creds);
                 return null;
             }
             catch (Exception ex) { return ex.Message; }

@@ -9,14 +9,18 @@ using System.Web.UI.WebControls;
 
 namespace Notification
 {
-    public partial class _Default : Page
+    public partial class _Default : PageBase
     {
+        private const int _pageSize = 15;
         protected async void Page_Load(object sender, EventArgs e)
         {
             if (Page.IsPostBack == false)
             {
+                gridEmail.PageSize = _pageSize;
                 gridEmail.DataSource = await EmailItem.LoadData(gridEmail.PageIndex, gridEmail.PageSize);
                 gridEmail.DataBind();
+
+                gridPush.PageSize = _pageSize;
             }
         }
 
@@ -79,7 +83,7 @@ namespace Notification
         protected async void gridPush_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gridPush.PageIndex = e.NewPageIndex;
-            gridPush.DataSource = await PushItem.LoadData(e.NewPageIndex, gridEmail.PageSize);
+            gridPush.DataSource = await PushItem.LoadData(e.NewPageIndex, gridPush.PageSize);
             gridPush.DataBind();
         }
 

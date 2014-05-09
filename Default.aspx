@@ -28,14 +28,16 @@
 
                                 <asp:GridView runat="server" ID="gridEmail" AutoGenerateColumns="false"
                                     CssClass="message-table" ShowHeader="false" CellSpacing="0" CellPadding="0" AllowPaging="true"
-                                    PagerSettings-Mode="NextPreviousFirstLast" PagerStyle-HorizontalAlign="Right" PageSize="10" PagerSettings-Visible="true"
+                                    PagerSettings-Mode="NextPreviousFirstLast" PagerStyle-HorizontalAlign="Right" PagerSettings-Visible="true"
+                                    PagerSettings-FirstPageImageUrl="~/Images/anchor-begin.png" PagerSettings-LastPageImageUrl="~/Images/anchor-end.png"
+                                    PagerSettings-NextPageImageUrl="~/Images/anchor-right.png" PagerSettings-PreviousPageImageUrl="~/Images/anchor-left.png"
                                     OnRowDataBound="gridEmail_RowDataBound" AutoGenerateSelectButton="true" PagerStyle-CssClass="grid-pager" EmptyDataRowStyle-CssClass="grid-pager"
                                     OnSelectedIndexChanged="gridEmail_SelectedIndexChanged" OnPageIndexChanging="gridEmail_PageIndexChanging">
                                     <Columns>
                                         <asp:BoundField DataField="Id" ItemStyle-CssClass="hide" />
                                         <asp:BoundField DataField="To" ItemStyle-CssClass="message-to ellipsis" />
                                         <asp:BoundField DataField="Subject" ItemStyle-CssClass="message-subject ellipsis" />
-                                        <asp:BoundField DataField="Created" DataFormatString="{0:d}" ItemStyle-CssClass="message-timestamp ellipsis" />
+                                        <asp:BoundField DataField="CreatedShortStr" ItemStyle-CssClass="message-timestamp ellipsis" />
                                     </Columns>
                                     <EmptyDataTemplate>
                                         <span class="no-record text-muted">No email record found.</span>
@@ -130,14 +132,16 @@
                             <asp:View ID="pushListView" runat="server">
                                 <asp:GridView runat="server" ID="gridPush" AutoGenerateColumns="false"
                                     CssClass="message-table" ShowHeader="false" CellSpacing="0" CellPadding="0" AllowPaging="true"
-                                    PagerSettings-Mode="NextPreviousFirstLast" PagerStyle-HorizontalAlign="Right" PageSize="10" PagerSettings-Visible="true"
+                                    PagerSettings-Mode="NextPreviousFirstLast" PagerStyle-HorizontalAlign="Right" PagerSettings-Visible="true"
+                                    PagerSettings-FirstPageImageUrl="~/Images/anchor-begin.png" PagerSettings-LastPageImageUrl="~/Images/anchor-end.png"
+                                    PagerSettings-NextPageImageUrl="~/Images/anchor-right.png" PagerSettings-PreviousPageImageUrl="~/Images/anchor-left.png"
                                     OnRowDataBound="gridPush_RowDataBound" AutoGenerateSelectButton="true" PagerStyle-CssClass="grid-pager" EmptyDataRowStyle-CssClass="grid-pager"
                                     OnSelectedIndexChanged="gridPush_SelectedIndexChanged" OnPageIndexChanging="gridPush_PageIndexChanging">
                                     <Columns>
                                         <asp:BoundField DataField="Id" ItemStyle-CssClass="hide" />
                                         <asp:BoundField DataField="To" ItemStyle-CssClass="message-to ellipsis" />
                                         <asp:BoundField DataField="Message" ItemStyle-CssClass="message-subject ellipsis" />
-                                        <asp:BoundField DataField="Created" DataFormatString="{0:d}" ItemStyle-CssClass="message-timestamp ellipsis" />
+                                        <asp:BoundField DataField="CreatedShortStr" DataFormatString="{0:d}" ItemStyle-CssClass="message-timestamp ellipsis" />
                                     </Columns>
                                     <EmptyDataTemplate>
                                         <span class="no-record text-muted">No push record found.</span>
