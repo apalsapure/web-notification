@@ -1,5 +1,4 @@
 ﻿<%@ Page Title="Manage Account" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manage.aspx.cs" Inherits="Notification.Account.Manage" %>
-<%@ Register Src="~/Account/OpenAuthProviders.ascx" TagPrefix="uc" TagName="OpenAuthProviders" %>
 
 <asp:Content ContentPlaceHolderID="MainContent" runat="server">
     <hgroup class="title">
@@ -119,8 +118,5 @@
                 </tr>
             </ItemTemplate>
         </asp:ListView>
-
-        <h3>Add an external login</h3>
-        <uc:OpenAuthProviders runat="server" ReturnUrl="~/Account/Manage" />
     </section>
 </asp:Content>

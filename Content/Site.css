@@ -171,7 +171,7 @@ label { display: block; font-size: 1.2em; font-weight: 600; }
 
     label.checkbox { display: inline; }
 
-input, textarea { border: 1px solid #e2e2e2; font-size: 1.1em; margin: 5px 0 6px 0; }
+input, textarea { border: 1px solid #e2e2e2; font-size: 1.1em; margin: 5px 0 6px 0; padding: 8px 6px; }
 
 textarea { font-family: inherit; width: 500px; }
 
@@ -368,6 +368,7 @@ select { height: 28px; border: solid 1px #ddd; padding-left: 4px; margin-left: 5
     .message-table .grid-pager, .message-table .grid-pager:hover, .message-table .grid-pager tr:hover, .message-table .no-record, .message-table .no-record:hover { padding: 4px 12px; cursor: default; background-color: #fff; border-bottom: none; }
         .message-table .grid-pager span { line-height: 30px; }
         .message-table .grid-pager td { line-height: 24px; padding: 3px 20px 2px 0; }
+        .message-table .grid-pager input { padding: 4px; }
     .message-table td { padding: 3px 12px 2px; line-height: 30px; display: inline-block; }
     .message-table a:hover { background-color: #fff; }
 .right-container { min-height: 100px !important; background-color: #fff; padding: 0px !important; }
