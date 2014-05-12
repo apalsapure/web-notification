@@ -372,8 +372,8 @@ select { height: 28px; border: solid 1px #ddd; padding-left: 4px; margin-left: 5
     .message-table td { padding: 3px 12px 2px; line-height: 30px; display: inline-block; }
     .message-table a:hover { background-color: #fff; }
 .right-container { min-height: 100px !important; background-color: #fff; padding: 0px !important; }
-.message-to { width: 20%; min-width: 120px; }
-.message-subject { width: 69%; }
+.message-to { width: 22%; min-width: 120px; }
+.message-subject { width: 67%; }
 .message-timestamp { max-width: 10%; padding-right: 0px; text-align: right; }
 .list-view { background-color: #F3F3F3; }
 .left-nav { margin-right: -15px; }

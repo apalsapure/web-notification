@@ -67,7 +67,7 @@ namespace Notification
 
         protected async void btnSendEmail_Click(object sender, EventArgs e)
         {
-            if (chkSettings.Checked && App.UserContext.LoggedInUser.GetAttribute("smtp:username") == null)
+            if (chkSettings.Checked && AppContext.UserContext.LoggedInUser.GetAttribute("smtp:username") == null)
             {
                 lblEmailMessage.Text = "Setup the settings first.";
                 return;

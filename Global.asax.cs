@@ -21,13 +21,13 @@ namespace Notification
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
             //Initialize Appacitive SDK
-            Appacitive.Sdk.App.InitializeForAspnet(ConfigurationManager.AppSettings["app-id"], ConfigurationManager.AppSettings["api-key"],
+            Appacitive.Sdk.AppContext.InitializeForAspnet(ConfigurationManager.AppSettings["app-id"], ConfigurationManager.AppSettings["api-key"],
                 Appacitive.Sdk.Environment.Sandbox);
 
-            //Adding mapping
-            Appacitive.Sdk.App.Types.MapObjectType<User>(Models.User.APPACITIVE_TYPE);
-            Appacitive.Sdk.App.Types.MapObjectType<EmailItem>(EmailItem.APPACITIVE_TYPE);
-            Appacitive.Sdk.App.Types.MapObjectType<PushItem>(PushItem.APPACITIVE_TYPE);
+            //Map your model object to appacitive type
+            Appacitive.Sdk.AppContext.Types.MapObjectType<User>("user");
+            Appacitive.Sdk.AppContext.Types.MapObjectType<EmailItem>("email");
+            Appacitive.Sdk.AppContext.Types.MapObjectType<PushItem>("push");
         }
 
         void Session_Start(object sender, EventArgs e)

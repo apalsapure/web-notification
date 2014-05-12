@@ -9,7 +9,7 @@ using System.Web.UI.WebControls;
 
 namespace Notification
 {
-    public partial class _Default : PageBase
+    public partial class _Default : Page
     {
         private const int _pageSize = 15;
         protected async void Page_Load(object sender, EventArgs e)

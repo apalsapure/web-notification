@@ -9,9 +9,7 @@ namespace Notification.Models
 {
     public class EmailItem : APObject
     {
-        public const string APPACITIVE_TYPE = "email";
-
-        public EmailItem() : base(APPACITIVE_TYPE) { }
+        public EmailItem() : base("email") { }
 
         public EmailItem(APObject existing) : base(existing) { }
 
@@ -62,18 +60,21 @@ namespace Notification.Models
         }
         public string CreatedStr { get { return Created.ToString("ddd dd/MM/yy hh:mm tt"); } }
 
+        //get the data for the specified page number
         public async static Task<List<EmailItem>> LoadData(int pageCount, int pageSize)
         {
             try
             {
                 var list = new List<EmailItem>();
 
-                //get the items from appacitive
-                var result = await App.UserContext.LoggedInUser.GetConnectedObjectsAsync("user_email",
-                                                                                        pageNumber: pageCount + 1,
-                                                                                        pageSize: pageSize,
-                                                                                        orderBy: "__id",
-                                                                                        sortOrder: SortOrder.Descending);
+                //get connected email items for current user
+                var user = AppContext.UserContext.LoggedInUser;
+                var result = await user.GetConnectedObjectsAsync("user_email",
+                                                                fields: new[] { "to", "subject", "__utcdatecreated" },
+                                                                pageNumber: pageCount + 1,
+                                                                pageSize: pageSize,
+                                                                orderBy: "__id",
+                                                                sortOrder: SortOrder.Descending);
                 result.ForEach((r) => { list.Add(r as EmailItem); });
 
                 //populate empty list for paging
@@ -90,19 +91,30 @@ namespace Notification.Models
                 }
                 return dummyList;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                if (ExceptionPolicy.HandleException(ex))
+                    throw;
+            }
             return null;
         }
 
+        //get the email item details
         public async static Task<EmailItem> Fetch(string id)
         {
             try
             {
-                return await APObjects.GetAsync(APPACITIVE_TYPE, id) as EmailItem;
+                return await APObjects.GetAsync("email", id) as EmailItem;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                if (ExceptionPolicy.HandleException(ex))
+                    throw;
+                return null;
+            }
         }
 
+        //save the email item in context of logged in user
         public async Task<string> Save()
         {
             try
@@ -120,12 +132,14 @@ namespace Notification.Models
                 //when connection is saved, email object is automatically created
                 await Appacitive.Sdk.APConnection
                                 .New("user_email")
-                                .FromExistingObject("user", App.UserContext.LoggedInUser.Id)
+                                .FromExistingObject("user", AppContext.UserContext.LoggedInUser.Id)
                                 .ToNewObject("email", this)
                                 .SaveAsync();
             }
             catch (Exception ex)
             {
+                if (ExceptionPolicy.HandleException(ex))
+                    throw;
                 return ex.Message;
             }
             return null;
@@ -149,10 +163,14 @@ namespace Notification.Models
                 var cc = new List<string>(); ;
                 to.AddRange(this.To.Split(','));
                 if (string.IsNullOrEmpty(this.CC) == false) cc.AddRange(this.CC.Split(','));
-                var email = NewEmail
+
+                //construct the email
+                var email = Email
                                 .Create(this.Subject)
-                                .To(to, cc)
+                                .WithRecipients(to, cc)
                                 .From(this.From);
+
+                //decide whether it's a templated or raw email
                 if (string.IsNullOrEmpty(this.TemplateName))
                     email = email.WithBody(this.Body, true);
                 else
@@ -162,16 +180,22 @@ namespace Notification.Models
                 if (this.WithCustomSettings)
                 {
                     email.Server = new SmtpServer();
-                    email.Server.Username = App.UserContext.LoggedInUser.GetAttribute("smtp:username");
-                    email.Server.Password = App.UserContext.LoggedInUser.GetAttribute("smtp:password");
-                    email.Server.Host = App.UserContext.LoggedInUser.GetAttribute("smtp:host");
-                    email.Server.Port = int.Parse(App.UserContext.LoggedInUser.GetAttribute("smtp:port"));
-                    email.Server.EnableSSL = bool.Parse(App.UserContext.LoggedInUser.GetAttribute("smtp:ssl"));
+                    email.Server.Username = AppContext.UserContext.LoggedInUser.GetAttribute("smtp:username");
+                    email.Server.Password = AppContext.UserContext.LoggedInUser.GetAttribute("smtp:password");
+                    email.Server.Host = AppContext.UserContext.LoggedInUser.GetAttribute("smtp:host");
+                    email.Server.Port = int.Parse(AppContext.UserContext.LoggedInUser.GetAttribute("smtp:port"));
+                    email.Server.EnableSSL = bool.Parse(AppContext.UserContext.LoggedInUser.GetAttribute("smtp:ssl"));
                 }
 
+                //send email
                 await email.SendAsync();
             }
-            catch (Exception ex) { return ex.Message; }
+            catch (Exception ex)
+            {
+                if (ExceptionPolicy.HandleException(ex))
+                    throw;
+                return ex.Message;
+            }
             return null;
         }
         #endregion

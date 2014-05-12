@@ -38,16 +38,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Appacitive.Sdk, Version=0.9.8.23747, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Appacitive.Sdk, Version=0.9.9.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\appacitive-dotnet-sdk\src\Appacitive.Sdk.Net45\bin\Debug\Appacitive.Sdk.dll</HintPath>
+      <HintPath>packages\Appacitive.0.9.9.1\lib\net45\Appacitive.Sdk.dll</HintPath>
     </Reference>
-    <Reference Include="Appacitive.Sdk.Net45, Version=0.9.8.23748, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Appacitive.Sdk.Net45, Version=0.9.9.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\appacitive-dotnet-sdk\src\Appacitive.Sdk.Net45\bin\Debug\Appacitive.Sdk.Net45.dll</HintPath>
+      <HintPath>packages\Appacitive.0.9.9.1\lib\net45\Appacitive.Sdk.Net45.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -325,9 +326,7 @@
     <Compile Include="Contact.aspx.designer.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Models\PageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="Models\ExceptionPolicy.cs" />
     <Compile Include="Models\PushItem.cs" />
     <Compile Include="Models\EmailItem.cs" />
     <Compile Include="Models\User.cs" />

@@ -9,10 +9,7 @@ namespace Notification.Models
 {
     public class PushItem : APObject
     {
-        public const string APPACITIVE_TYPE = "push";
-        public const string APPACITIVE_CONNECTION = "user_push";
-
-        public PushItem() : base(APPACITIVE_TYPE) { }
+        public PushItem() : base("push") { }
 
         public PushItem(APObject existing) : base(existing) { }
 
@@ -58,7 +55,7 @@ namespace Notification.Models
         }
         public string CreatedStr { get { return Created.ToString("ddd dd/MM/yy hh:mm tt"); } }
 
-
+        //get the data for the specified page number
         public async static Task<List<PushItem>> LoadData(int pageCount, int pageSize)
         {
             try
@@ -66,11 +63,13 @@ namespace Notification.Models
                 var list = new List<PushItem>();
 
                 //get the items from appacitive
-                var result = await App.UserContext.LoggedInUser.GetConnectedObjectsAsync(APPACITIVE_CONNECTION,
-                                                                        pageNumber: pageCount + 1,
-                                                                        pageSize: pageSize,
-                                                                        orderBy: "__id",
-                                                                        sortOrder: SortOrder.Descending);
+                var user = AppContext.UserContext.LoggedInUser;
+                var result = await user.GetConnectedObjectsAsync("user_push",
+                                                                fields: new[] { "to", "message", "__utcdatecreated" },
+                                                                pageNumber: pageCount + 1,
+                                                                pageSize: pageSize,
+                                                                orderBy: "__id",
+                                                                sortOrder: SortOrder.Descending);
                 result.ForEach((r) => { list.Add(r as PushItem); });
 
                 //populate empty list for paging
@@ -87,18 +86,30 @@ namespace Notification.Models
                 }
                 return dummyList;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                if (ExceptionPolicy.HandleException(ex))
+                    throw;
+                return null;
+            }
         }
 
+        //get the push item details
         public async static Task<PushItem> Fetch(string id)
         {
             try
             {
-                return await APObjects.GetAsync(APPACITIVE_TYPE, id) as PushItem;
+                return await APObjects.GetAsync("push", id) as PushItem;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                if (ExceptionPolicy.HandleException(ex))
+                    throw;
+                return null;
+            }
         }
 
+        //save the push item in context of logged in user
         public async Task<string> Save()
         {
             try
@@ -109,32 +120,41 @@ namespace Notification.Models
                 //we will create a connection between user and the push object
                 //when connection is saved, push object is automatically created
                 await Appacitive.Sdk.APConnection
-                                .New(APPACITIVE_CONNECTION)
-                                .FromExistingObject(User.APPACITIVE_TYPE, App.UserContext.LoggedInUser.Id)
-                                .ToNewObject(APPACITIVE_TYPE, this)
+                                .New("user_push")
+                                .FromExistingObject("user", AppContext.UserContext.LoggedInUser.Id)
+                                .ToNewObject("push", this)
                                 .SaveAsync();
                 await this.SaveAsync();
             }
             catch (Exception ex)
             {
+                if (ExceptionPolicy.HandleException(ex))
+                    throw;
                 return ex.Message;
             }
             return null;
         }
 
+        #region Private Helper Methods
         private async Task<string> SendPush()
         {
             try
             {
                 PushNotification push = null;
                 var message = string.Format("{0}: {1}", this.From, this.Message);
+
+                //depending upon type of recipients we will construct the push object
                 switch (this.ToType)
                 {
                     case 0: push = PushNotification.ToChannels(message, this.To.Split(',')); break;
                     case 1: push = PushNotification.ToDeviceIds(message, this.To.Split(',')); break;
                     default: push = PushNotification.Broadcast(message); this.To = "Broadcast"; break;
                 }
+
+                //set the badge
                 if (string.IsNullOrEmpty(this.Badge) == false) push = push.WithBadge(this.Badge);
+
+                //set the expiry
                 if (push.ExpiryInSeconds > 0) push = push.WithExpiry(push.ExpiryInSeconds);
 
                 //for this sample we will send toast notification
@@ -144,26 +164,29 @@ namespace Notification.Models
                 //send push
                 await push.SendAsync();
 
+                //using same push object we will send a tile notification
+                //this will show a badge on the tile
                 var tile = TileNotification.CreateNewFlipTile(new FlipTile
                 {
                     BackContent = this.From,
                     BackTitle = "New Message",
                     FrontCount = "+0"
                 });
-
                 push.WithPlatformOptions(WindowsPhoneOptions.WithTile(tile));
 
+                //send the push notification
                 await push.SendAsync();
 
                 return null;
             }
             catch (Exception ex)
             {
+                if (ExceptionPolicy.HandleException(ex))
+                    throw;
                 return ex.Message;
             }
         }
 
-        #region Private Helper Methods
         private static List<PushItem> FillDataSet(int maxRecords)
         {
             var list = new List<PushItem>();

@@ -13,8 +13,6 @@ namespace Notification.Models
 
         public User(APUser existing) : base(existing) { }
 
-        public const string APPACITIVE_TYPE = "user";
-
         public User(string username, string email, string password, string firstname, string lastname)
         {
             this.Username = username;
@@ -24,19 +22,25 @@ namespace Notification.Models
             this.LastName = lastname;
         }
 
+        //authenticate user
         public async static Task<string> Authenticate(string userName, string password)
         {
             try
             {
-                var creds = new UsernamePasswordCredentials(userName, password);
-                creds.MaxAttempts = int.MaxValue;
-                creds.TimeoutInSeconds = int.MaxValue;
-                await App.LoginAsync(creds);
+                //authenticate user on Appacitive
+                var credentials = new UsernamePasswordCredentials(userName, password)
+                {
+                    TimeoutInSeconds = int.MaxValue,
+                    MaxAttempts = int.MaxValue
+                };
+
+                await Appacitive.Sdk.AppContext.LoginAsync(credentials);
                 return null;
             }
             catch (Exception ex) { return ex.Message; }
         }
 
+        //signup user
         public static async Task<string> CreateUser(string username, string password, string email, string firstname, string lastname)
         {
 
@@ -68,11 +72,12 @@ namespace Notification.Models
             }
         }
 
+        //save SMTP settings in user attributes
         public static async Task<string> SaveSMTPSettings(string username, string password, string host, int port, bool enableSSL)
         {
             try
             {
-                var user = App.UserContext.LoggedInUser;
+                var user = AppContext.UserContext.LoggedInUser;
                 user.SetAttribute("smtp:username", username);
                 user.SetAttribute("smtp:password", password);
                 user.SetAttribute("smtp:host", host);
@@ -83,6 +88,8 @@ namespace Notification.Models
             }
             catch (Exception ex)
             {
+                if (ExceptionPolicy.HandleException(ex))
+                    throw;
                 return ex.Message;
             }
         }
@@ -101,7 +108,7 @@ namespace Notification.Models
 
         private async static Task<List<User>> GetMatchingUsers(IQuery query, int pageIndex, int pageSize)
         {
-            var users = await APUsers.FindAllAsync(query, page: pageIndex, pageSize: pageSize, orderBy: "__id", sortOrder: SortOrder.Ascending);
+            var users = await APUsers.FindAllAsync(query, pageNumber: pageIndex, pageSize: pageSize, orderBy: "__id", sortOrder: SortOrder.Ascending);
 
             var result = new List<User>();
             users.ForEach((u) =>
@@ -123,6 +130,7 @@ namespace Notification.Models
         }
         #endregion
 
+        //save user
         public async Task<string> Save()
         {
             try
@@ -132,12 +140,21 @@ namespace Notification.Models
             }
             catch (Exception ex)
             {
+                if (ExceptionPolicy.HandleException(ex))
+                    throw;
                 return ex.Message;
             }
         }
 
+        //logs out user
         public static string Logout()
         {
+            try
+            {
+                //Logout user
+                Appacitive.Sdk.AppContext.LogoutAsync();
+            }
+            catch (Exception ex) { return ex.Message; }
             return null;
         }
     }
