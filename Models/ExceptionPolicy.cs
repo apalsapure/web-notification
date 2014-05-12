@@ -11,16 +11,17 @@ namespace Notification.Models
     {
         public static bool HandleException(Exception ex)
         {
+            //user in the context is null
+            if (AppContext.UserContext.LoggedInUser == null) return LogoutUser();
+
+            //check if exception occurred is an api error
             if (ex is AppacitiveApiException)
             {
                 var appEx = ex as AppacitiveApiException;
 
                 //user session expired
                 if (appEx.Code == "19036")
-                {
-                    FormsAuthentication.SignOut();
-                    FormsAuthentication.RedirectToLoginPage();
-                }
+                    return LogoutUser();
 
                 return false;
             }
@@ -29,6 +30,13 @@ namespace Notification.Models
                 return true;
             }
             else return false;
+        }
+
+        private static bool LogoutUser()
+        {
+            FormsAuthentication.SignOut();
+            FormsAuthentication.RedirectToLoginPage();
+            return false;
         }
     }
 }

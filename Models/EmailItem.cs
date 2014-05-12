@@ -104,7 +104,19 @@ namespace Notification.Models
         {
             try
             {
-                return await APObjects.GetAsync("email", id) as EmailItem;
+                //get the email item details
+                var emailItem = await APObjects.GetAsync("email", id) as EmailItem;
+                emailItem.PlaceHolders = new Dictionary<string, string>();
+
+                //load the place holders from the attributes
+                if (emailItem.Attributes != null)
+                {
+                    foreach (var keyValue in emailItem.Attributes)
+                    {
+                        emailItem.PlaceHolders[keyValue.Key] = keyValue.Value;
+                    }
+                }
+                return emailItem;
             }
             catch (Exception ex)
             {
