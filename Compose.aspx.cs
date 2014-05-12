@@ -1,5 +1,4 @@
-﻿using Appacitive.Sdk;
-using Notification.Models;
+﻿using Notification.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,7 +66,7 @@ namespace Notification
 
         protected async void btnSendEmail_Click(object sender, EventArgs e)
         {
-            if (chkSettings.Checked && AppContext.UserContext.LoggedInUser.GetAttribute("smtp:username") == null)
+            if (chkSettings.Checked)
             {
                 lblEmailMessage.Text = "Setup the settings first.";
                 return;

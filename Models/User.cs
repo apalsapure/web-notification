@@ -1,5 +1,4 @@
-﻿using Appacitive.Sdk;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,11 +6,13 @@ using System.Web;
 
 namespace Notification.Models
 {
-    public class User : APUser
+    public class User
     {
-        public User() : base() { }
-
-        public User(APUser existing) : base(existing) { }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         public User(string username, string email, string password, string firstname, string lastname)
         {
@@ -28,13 +29,7 @@ namespace Notification.Models
             try
             {
                 //authenticate user on Appacitive
-                var credentials = new UsernamePasswordCredentials(userName, password)
-                {
-                    TimeoutInSeconds = int.MaxValue,
-                    MaxAttempts = int.MaxValue
-                };
-
-                await Appacitive.Sdk.AppContext.LoginAsync(credentials);
+                //TODO
                 return null;
             }
             catch (Exception ex) { return ex.Message; }
@@ -77,13 +72,9 @@ namespace Notification.Models
         {
             try
             {
-                var user = AppContext.UserContext.LoggedInUser;
-                user.SetAttribute("smtp:username", username);
-                user.SetAttribute("smtp:password", password);
-                user.SetAttribute("smtp:host", host);
-                user.SetAttribute("smtp:port", port.ToString());
-                user.SetAttribute("smtp:ssl", enableSSL.ToString());
-                await user.SaveAsync();
+                //get the user from the context
+                //and set the SMTP settings in the attribute
+                //TODO
                 return null;
             }
             catch (Exception ex)
@@ -95,39 +86,26 @@ namespace Notification.Models
         }
 
         #region Private Helper Methods
+        //get username by email
         private async static Task<string> GetUserNameByEmail(string email)
         {
-            var totalRecords = 0;
-            var collection = await GetMatchingUsers(Query.Property("email").IsEqualTo(email), 0, 20);
-            if (totalRecords == 0) return null;
-            else
-            {
-                return collection[0].Username;
-            }
+            //TODO
+            throw new NotImplementedException();
         }
 
-        private async static Task<List<User>> GetMatchingUsers(IQuery query, int pageIndex, int pageSize)
-        {
-            var users = await APUsers.FindAllAsync(query, pageNumber: pageIndex, pageSize: pageSize, orderBy: "__id", sortOrder: SortOrder.Ascending);
-
-            var result = new List<User>();
-            users.ForEach((u) =>
-            {
-                result.Add(u as User);
-            });
-            return result;
-        }
-
+        //get user by username
         private async static Task<User> GetUser(string username, bool userIsOnline)
         {
-            var totalRecords = 0;
-            var collection = await GetMatchingUsers(Query.Property("username").IsEqualTo(username), 0, 20);
-            if (totalRecords == 0) return null;
-            else
-            {
-                return collection[0];
-            }
+            //TODO
+            throw new NotImplementedException();
         }
+
+        //helper function which executes the given query and returns matching users
+        //private async static Task<List<User>> GetMatchingUsers(IQuery query, int pageIndex, int pageSize)
+        //{
+        //    //TODO
+        //    throw new NotImplementedException();
+        //}
         #endregion
 
         //save user
@@ -135,7 +113,8 @@ namespace Notification.Models
         {
             try
             {
-                await this.SaveAsync();
+                //save in the backend
+                //TODO
                 return null;
             }
             catch (Exception ex)
@@ -152,7 +131,7 @@ namespace Notification.Models
             try
             {
                 //Logout user
-                Appacitive.Sdk.AppContext.LogoutAsync();
+                //TODO
             }
             catch (Exception ex) { return ex.Message; }
             return null;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Appacitive.Sdk;
 using System.Web.Security;
 
 namespace Notification.Models
@@ -11,24 +10,15 @@ namespace Notification.Models
     {
         public static bool HandleException(Exception ex)
         {
-            if (ex is AppacitiveApiException)
-            {
-                var appEx = ex as AppacitiveApiException;
+            //TODO
+            return false;
+        }
 
-                //user session expired
-                if (appEx.Code == "19036")
-                {
-                    FormsAuthentication.SignOut();
-                    FormsAuthentication.RedirectToLoginPage();
-                }
-
-                return false;
-            }
-            else if (ex is AppacitiveRuntimeException)
-            {
-                return true;
-            }
-            else return false;
+        private static bool LogoutUser()
+        {
+            FormsAuthentication.SignOut();
+            FormsAuthentication.RedirectToLoginPage();
+            return false;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Appacitive.Sdk.Internal;
-using Notification.Models;
+﻿using Notification.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -21,13 +20,10 @@ namespace Notification
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
             //Initialize Appacitive SDK
-            Appacitive.Sdk.AppContext.InitializeForAspnet(ConfigurationManager.AppSettings["app-id"], ConfigurationManager.AppSettings["api-key"],
-                Appacitive.Sdk.Environment.Sandbox);
+            //TODO
 
             //Map your model object to appacitive type
-            Appacitive.Sdk.AppContext.Types.MapObjectType<User>("user");
-            Appacitive.Sdk.AppContext.Types.MapObjectType<EmailItem>("email");
-            Appacitive.Sdk.AppContext.Types.MapObjectType<PushItem>("push");
+            //TODO
         }
 
         void Session_Start(object sender, EventArgs e)

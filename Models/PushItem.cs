@@ -1,5 +1,4 @@
-﻿using Appacitive.Sdk;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,44 +6,17 @@ using System.Web;
 
 namespace Notification.Models
 {
-    public class PushItem : APObject
+    public class PushItem
     {
-        public PushItem() : base("push") { }
+        public string Id { get; set; }
+        public string To { get; set; }
+        public int ToType { get; set; }
+        public string From { get; set; }
+        public string Message { get; set; }
+        public string Badge { get; set; }
+        public int Expiry { get; set; }
 
-        public PushItem(APObject existing) : base(existing) { }
-
-        public string To
-        {
-            get { return base.Get<string>("to"); }
-            set { base.Set<string>("to", value); }
-        }
-        public int ToType
-        {
-            get { return base.Get<int>("totype"); }
-            set { base.Set<int>("totype", value); }
-        }
-        public string From
-        {
-            get { return base.Get<string>("from"); }
-            set { base.Set<string>("from", value); }
-        }
-        public string Message
-        {
-            get { return base.Get<string>("message"); }
-            set { base.Set<string>("message", value); }
-        }
-        public string Badge
-        {
-            get { return base.Get<string>("badge"); }
-            set { base.Set<string>("badge", value); }
-        }
-        public int Expiry
-        {
-            get { return base.Get<int>("expiry"); }
-            set { base.Set<int>("expiry", value); }
-        }
-
-        public DateTime Created { get { return base.CreatedAt; } }
+        public DateTime Created { get; set; }
         public string CreatedShortStr
         {
             get
@@ -56,6 +28,7 @@ namespace Notification.Models
         public string CreatedStr { get { return Created.ToString("ddd dd/MM/yy hh:mm tt"); } }
 
         //get the data for the specified page number
+        private static int _maxCount = 20;
         public async static Task<List<PushItem>> LoadData(int pageCount, int pageSize)
         {
             try
@@ -63,23 +36,36 @@ namespace Notification.Models
                 var list = new List<PushItem>();
 
                 //get the items from appacitive
-                var user = AppContext.UserContext.LoggedInUser;
-                var result = await user.GetConnectedObjectsAsync("user_push",
-                                                                fields: new[] { "to", "message", "__utcdatecreated" },
-                                                                pageNumber: pageCount + 1,
-                                                                pageSize: pageSize,
-                                                                orderBy: "__id",
-                                                                sortOrder: SortOrder.Descending);
-                result.ForEach((r) => { list.Add(r as PushItem); });
+                //TODO
+                list.Add(new PushItem { To = "some@one.com", Message = "Push One" });
+                list.Add(new PushItem { To = "some@two.com", Message = "Push Two" });
+                list.Add(new PushItem { To = "some@three.com", Message = "Push Three" });
+                list.Add(new PushItem { To = "some@four.com", Message = "Push Four" });
+                list.Add(new PushItem { To = "some@five.com", Message = "Push Five" });
+                list.Add(new PushItem { To = "some@six.com", Message = "Push Six" });
+                list.Add(new PushItem { To = "some@seven.com", Message = "Push Seven" });
+                list.Add(new PushItem { To = "some@eight.com", Message = "Push Eight" });
+                list.Add(new PushItem { To = "some@nine.com", Message = "Push Nine" });
+                list.Add(new PushItem { To = "some@ten.com", Message = "Push Ten" });
+                list.Add(new PushItem { To = "some@one.com", Message = "Push One" });
+                list.Add(new PushItem { To = "some@two.com", Message = "Push Two" });
+                list.Add(new PushItem { To = "some@three.com", Message = "Push Three" });
+                list.Add(new PushItem { To = "some@four.com", Message = "Push Four" });
+                list.Add(new PushItem { To = "some@five.com", Message = "Push Five" });
+                list.Add(new PushItem { To = "some@six.com", Message = "Push Six" });
+                list.Add(new PushItem { To = "some@seven.com", Message = "Push Seven" });
+                list.Add(new PushItem { To = "some@eight.com", Message = "Push Eight" });
+                list.Add(new PushItem { To = "some@nine.com", Message = "Push Nine" });
+                list.Add(new PushItem { To = "some@ten.com", Message = "Push Ten" });
 
                 //populate empty list for paging
-                var dummyList = FillDataSet(result.TotalRecords);
+                var dummyList = FillDataSet(_maxCount);
                 var itemsToPopulate = 0;
                 var counter = pageCount * pageSize;
 
                 while (itemsToPopulate < pageSize)
                 {
-                    if (counter >= result.TotalRecords) break;
+                    if (counter >= _maxCount) break;
                     dummyList[counter] = list[itemsToPopulate];
                     counter++;
                     itemsToPopulate++;
@@ -99,7 +85,8 @@ namespace Notification.Models
         {
             try
             {
-                return await APObjects.GetAsync("push", id) as PushItem;
+                //todo 
+                return new PushItem { To = "some@one.com", Message = "Push One", From = "John Doe" };
             }
             catch (Exception ex)
             {
@@ -119,12 +106,8 @@ namespace Notification.Models
                 //as we need to store this push object in context of user
                 //we will create a connection between user and the push object
                 //when connection is saved, push object is automatically created
-                await Appacitive.Sdk.APConnection
-                                .New("user_push")
-                                .FromExistingObject("user", AppContext.UserContext.LoggedInUser.Id)
-                                .ToNewObject("push", this)
-                                .SaveAsync();
-                await this.SaveAsync();
+                //TODO
+                throw new NotImplementedException();
             }
             catch (Exception ex)
             {
@@ -140,42 +123,7 @@ namespace Notification.Models
         {
             try
             {
-                PushNotification push = null;
-                var message = string.Format("{0}: {1}", this.From, this.Message);
-
-                //depending upon type of recipients we will construct the push object
-                switch (this.ToType)
-                {
-                    case 0: push = PushNotification.ToChannels(message, this.To.Split(',')); break;
-                    case 1: push = PushNotification.ToDeviceIds(message, this.To.Split(',')); break;
-                    default: push = PushNotification.Broadcast(message); this.To = "Broadcast"; break;
-                }
-
-                //set the badge
-                if (string.IsNullOrEmpty(this.Badge) == false) push = push.WithBadge(this.Badge);
-
-                //set the expiry
-                if (push.ExpiryInSeconds > 0) push = push.WithExpiry(push.ExpiryInSeconds);
-
-                //for this sample we will send toast notification
-                var toast = new ToastNotification(this.From, this.Message, "/MainPage.xaml");
-                push.WithPlatformOptions(WindowsPhoneOptions.WithToast(toast));
-
-                //send push
-                await push.SendAsync();
-
-                //using same push object we will send a tile notification
-                //this will show a badge on the tile
-                var tile = TileNotification.CreateNewFlipTile(new FlipTile
-                {
-                    BackContent = this.From,
-                    BackTitle = "New Message",
-                    FrontCount = "+0"
-                });
-                push.WithPlatformOptions(WindowsPhoneOptions.WithTile(tile));
-
-                //send the push notification
-                await push.SendAsync();
+                //TODO
 
                 return null;
             }
